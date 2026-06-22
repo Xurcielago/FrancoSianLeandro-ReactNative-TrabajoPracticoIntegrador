@@ -1,98 +1,210 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+// 1. INTERFAZ: Molde de una tarea
+interface Task {
+  id: string;
+  title: string;
+  completed: boolean;
+}
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  // 2. ESTADO TIPADO
+  const [task, setTask] = useState('');
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  // 3. FUNCIONES CON TIPOS
+
+  const addTask = () => {
+    if (task.trim() === '') {
+      Alert.alert('Campo vacío', 'Escribí algo antes de agregar.');
+      return;
+    }
+
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title: task.trim(),
+      completed: false,
+    };
+
+    setTasks([newTask, ...tasks]);
+    setTask('');
+    Keyboard.dismiss();
+  };
+
+  const toggleComplete = (id: string) => {
+    setTasks(
+      tasks.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+  };
+
+  const deleteTask = (id: string) => {
+    setTasks(tasks.filter((item) => item.id !== id));
+  };
+
+  // 4. RENDERIZADO DE CADA TAREA
+  const renderTask = ({ item }: { item: Task }) => (
+    <View style={styles.taskCard}>
+      <TouchableOpacity
+        style={styles.taskTextContainer}
+        onPress={() => toggleComplete(item.id)}
+        activeOpacity={0.7}
+      >
+        <Text
+          style={[
+            styles.taskTitle,
+            item.completed && styles.taskCompleted,
+          ]}
+        >
+          {item.title}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => deleteTask(item.id)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.deleteButtonText}>X</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  // 5. INTERFAZ PRINCIPAL
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Mis Tareas</Text>
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="¿Qué necesitás hacer?"
+          value={task}
+          onChangeText={setTask}
+          onSubmitEditing={addTask}
+          returnKeyType="done"
+        />
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={addTask}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.addButtonText}>+</Text>
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={tasks}
+        renderItem={renderTask}
+        keyExtractor={(item) => item.id}
+        style={styles.list}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No hay tareas por ahora.</Text>
+        }
+      />
+    </SafeAreaView>
   );
 }
 
+// 6. ESTILOS
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 20,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    fontSize: 16,
+  },
+  addButton: {
+    marginLeft: 10,
+    backgroundColor: '#4A90E2',
+    borderRadius: 8,
+    width: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButtonText: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  list: {
+    flex: 1,
+  },
+  taskCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  taskTextContainer: {
+    flex: 1,
+    marginRight: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  taskTitle: {
+    fontSize: 16,
+    color: '#333',
+  },
+  taskCompleted: {
+    textDecorationLine: 'line-through',
+    color: '#999',
+    fontStyle: 'italic',
+  },
+  deleteButton: {
+    backgroundColor: '#FF5252',
+    borderRadius: 20,
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  deleteButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#999',
+    marginTop: 40,
+    fontSize: 16,
   },
 });
