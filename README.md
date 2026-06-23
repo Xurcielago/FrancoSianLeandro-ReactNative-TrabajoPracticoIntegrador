@@ -10,14 +10,14 @@ Aplicación móvil desarrollada como parte del Trabajo Práctico Integrador de l
 
 ## Estructura del proyecto
 
-src/
-app/
-index.tsx # Pantalla principal del gestor
-components/
-TaskCard.tsx # Tarjeta individual de tarea
-TaskInput.tsx # Campo de texto y botón para agregar
-hooks/
-useTasks.ts # Lógica de estado y CRUD de tareas
+- src/
+- app/
+- index.tsx # Pantalla principal del gestor
+- components/
+- TaskCard.tsx # Tarjeta individual de tarea
+- TaskInput.tsx # Campo de texto y botón para agregar
+- hooks/
+- useTasks.ts # Lógica de estado y CRUD de tareas
 
 ## Funcionalidades
 
