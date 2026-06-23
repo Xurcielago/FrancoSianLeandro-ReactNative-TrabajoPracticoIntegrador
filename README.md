@@ -1,50 +1,27 @@
-# Welcome to your Expo app 👋
+# Gestor de Tareas - Trabajo Práctico Integrador
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil desarrollada como parte del Trabajo Práctico Integrador de la materia **Programación III - React Native**. Permite registrar, completar y eliminar tareas diarias de forma sencilla.
 
-## Get started
+## Tecnologías
 
-1. Install dependencies
+- [React Native](https://reactnative.dev/) con [Expo](https://expo.dev/)
+- TypeScript
+- Expo Go (SDK 54)
 
-   ```bash
-   npm install
-   ```
+## Estructura del proyecto
 
-2. Start the app
+src/
+app/
+index.tsx # Pantalla principal del gestor
+components/
+TaskCard.tsx # Tarjeta individual de tarea
+TaskInput.tsx # Campo de texto y botón para agregar
+hooks/
+useTasks.ts # Lógica de estado y CRUD de tareas
 
-   ```bash
-   npx expo start
-   ```
+## Funcionalidades
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Agregar una tarea escribiendo en el campo de texto y presionando el botón `+`.
+- Validación: no se pueden agregar tareas vacías.
+- Marcar una tarea como completada tocando sobre su texto (se tacha y atenúa).
+- Eliminar una tarea con el botón `X`.
